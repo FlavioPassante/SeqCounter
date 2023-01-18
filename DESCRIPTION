@@ -1,0 +1,29 @@
+Package: SeqCounter
+Type: Package
+Title: Counts For Sequences
+Depends: 
+    R (>= 4.1)
+Imports: GenomicRanges, BSgenome.Hsapiens.UCSC.hg38, GenomicFeatures,
+    BiocVersion, GenomeInfoDb, S4Vectors, TxDb.Hsapiens.UCSC.hg38.knownGene
+Suggests: knitr, rmarkdown, BiocStyle, testthat
+Date: 2021-01-06
+Version: 0.99.0
+Authors@R: 
+    person(given = "Flavio",
+    family = "Passante",
+    role = c("aut", "cre"),
+    email = "flavio.passante@studenti.unimi.it")
+Description: 
+    This package provide a function for overall count of sequences 
+    inside a genomic regions.Given as input a reference genome,
+    a set of specific genomic regions (e.g all 5'UTR of coding genes)
+    and a set of short sequences, the function compute for each 
+    sequence the number of occurrencies inside the genomic regions. 
+    To allow this computation, the sequences to be searched have to 
+    match perfectly within the genomic regions, 
+    otherwise the function throws an error. 
+License: GPL-2
+Encoding: UTF-8
+biocViews: Infrastructure, FeatureExtraction
+RoxygenNote: 7.1.1
+VignetteBuilder: knitr

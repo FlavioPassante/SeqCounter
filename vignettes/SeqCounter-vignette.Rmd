@@ -1,0 +1,125 @@
+---
+title: "Counting sequence occurrences with SeqCounter"
+author: Flavio Passante
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+vignette: >
+  %\VignetteIndexEntry{Counting Sequence Occurrencies With SeqCounter}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+output:
+  BiocStyle::html_document:
+    number_sections: yes
+    toc: true
+    toc_depth: 2
+---
+
+```{r style, echo=FALSE, results='asis'}
+BiocStyle::markdown()
+```
+
+```{r, echo=FALSE}
+library(knitr)
+```
+
+```{r, echo = FALSE}
+library(SeqCounter)
+```
+
+
+# Introduction
+
+**SeqCounter** package provides a function `SequenceCounter` which computes 
+    the whole number of occurencies inside specific genomic regions 
+    (e.g all 3'UTR of coding genes) for each sequence set inserted by the user. 
+    This set of short sequences must be part of the aforementioned
+    regions(exact matching), otherwise the computation is not executed.  
+
+## Installation
+
+To install this package, start R (version "4.1") and enter:
+```{r, eval = FALSE}
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("SeqCounter")
+
+```
+A package only needs to be installed once. Load the package 
+into an R session with
+```{r, eval = FALSE}
+library(SeqCounter)
+```
+
+# SequenceCounter 
+
+
+## Arguments
+* `SequenceCounter` function takes three parameters:
+
+    * **Reference genome**: The user can insert any genome 
+    from `BSgenome` package.
+    * **Genomic Regions**: Could be any set of interesting 
+    genomic regions from the reference genome chosen, 
+    but it has to be a `GenomicRanges` object.
+    * **A set of sequences**: it is a short sequences 
+    set (`GenomicRanges` object) identified inside the genomic regions. For
+    this object, there isn't a restriction on the genomic correspondence: 
+    it could be a sequence set deriving from any another organism, 
+    looking for potential sequence homology.
+    
+
+## Function
+Here is shown an example of the usage of `SequenceCounter` function, i.e., 
+Counting the occurrencies for each short exon sequence inside all 5'UTR regions 
+of coding genes in Hsapiens.
+
+First step is selecting the reference genome, using `r Biocpkg("BSgenome")` 
+packages. Since in this example HSapiens is the reference genome, 
+`r Biocpkg("BSgenome.Hsapiens.UCSC.hg38")` package is used.
+```{r}
+Hsapiens <- BSgenome.Hsapiens.UCSC.hg38::BSgenome.Hsapiens.UCSC.hg38 
+```
+ 
+Afterwards, human genome annotation is retrieved using
+`r Biocpkg("TxDb.Hsapiens.UCSC.hg38.knownGene")` package.
+```{r}
+txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene::TxDb.Hsapiens.UCSC.hg38.knownGene 
+```
+
+In order to get the desired genomic regions, `r Biocpkg(" GenomicFeatures")` 
+package is suggested. In this example, all 5' UTR of 
+coding genes in HSapiens are extracted. 
+```{r}
+fiveprimeutr <- GenomicFeatures::fiveUTRsByTranscript(txdb) 
+```
+
+
+In the last step, a set of random exons inside the genomic regions is selected,
+using `r Biocpkg("GenomicRanges")` package.
+```{r}
+exons <- GenomicRanges::GRanges(c("chr1:65419-65432:+", 
+                                  "chr1:925731-925800:+",
+                                  "chr1:923928-924431:+")) 
+```
+
+SequenceCounter function can now be applied. 
+```{r}
+SequenceCounter(Hsapiens, fiveprimeutr, exons)
+```
+
+
+
+
+
+  
+## Details
+
+  `SequenceCounter` returns a Warning message if a sequence in **SeqSet** 
+    partially overlaps with the **Genomic Regions** inserted. This is because
+    that sequence is considered to be part of the regions,
+    but doesn't respect the "exact matching" condition.
+    For this type of sequences, the function returns 0 as output.
+    
+    
+    
